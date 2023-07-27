@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const EmployeeModel = require("./db/employee.model");
+const Equipment = require("./db/Equipment");
 
 const { MONGO_URL, PORT = 8080 } = process.env;
 
@@ -12,6 +13,22 @@ if (!MONGO_URL) {
 
 const app = express();
 app.use(express.json());
+
+app.get("/api/equipments/", async (req, res) => {
+  const equipments = await Equipment.find().sort({ created: "desc" });
+  return res.json(equipments);
+});
+
+app.post("/api/equipments/", async (req, res, next) => {
+  const equipments= req.body;
+
+  try {
+    const saved = await Equipment.create(equipments);
+    return res.json(saved);
+  } catch (err) {
+    return next(err);
+  }
+});
 
 app.get("/api/employees/", async (req, res) => {
   const employees = await EmployeeModel.find().sort({ created: "desc" });
@@ -56,6 +73,12 @@ app.delete("/api/employees/:id", async (req, res, next) => {
     return next(err);
   }
 });
+
+app.delete('/api/v1/deleteComment/:id', (req,res) => {
+  Todo.findByIdAndDelete(req.params.id)
+  .then(() => res.json({message: "Comment delete succesfully"}))
+  .catch((error) => res.status(400).json({error}));
+})
 
 const main = async () => {
   await mongoose.connect(MONGO_URL);

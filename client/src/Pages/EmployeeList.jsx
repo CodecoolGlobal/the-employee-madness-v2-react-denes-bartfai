@@ -36,7 +36,11 @@ const EmployeeList = () => {
     return <Loading />;
   }
 
-  return <EmployeeTable employees={employees} onDelete={handleDelete} />;
+  return (
+    <div>
+  <EmployeeTable employees={employees} onDelete={handleDelete} />
+  </div>
+  )
 };
 
 export default EmployeeList;
